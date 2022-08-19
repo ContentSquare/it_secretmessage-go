@@ -45,7 +45,7 @@ type BotConfig struct {
 func initConfig() *BotConfig {
 	viper.AddConfigPath("./config")
 	viper.SetConfigName("config")
-	viper.SetConfigName("secretmessage")
+	//viper.SetConfigName("secretmessage")
 	viper.SetConfigType("yaml")
 
 	viper.SetDefault("secretmessage.server.port", 8080)
