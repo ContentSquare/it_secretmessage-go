@@ -4,20 +4,24 @@
 #### Notice:
 Forked from [HERE](https://github.com/neufeldtech/secret-message)
 
+## Inhanced Features:
+
+Every Message are wiped out of the DB and thus unavailable after first read or after the specified `Expired Time`.
+
 ---
 
- Send one-way messages through Slack
+Send one-way messages through Slack
 
 ---
 
 ## Table of Contents :
-  - [Prerequisites and setup](#prerequisites-and-setup)
+- [Prerequisites and setup](#prerequisites-and-setup)
     - [Slack app setup](#slack-app-setup)
     - [Setup bot config file](#setup-bot-config-file)
     - [Build and run the app](#build-and-run-the-app)
-  - [Send a secret message](#send-a-secret-message)
-  - [Read a secret message](#read-a-secret-message)
-  - [License](#license)
+- [Send a secret message](#send-a-secret-message)
+- [Read a secret message](#read-a-secret-message)
+- [License](#license)
 
 
 ---
@@ -34,25 +38,26 @@ Forked from [HERE](https://github.com/neufeldtech/secret-message)
 - Set redirect URLs and bot scopes from https://api.slack.com/apps/${APP_ID}/oauth <img src="assets/03_cfg_oauth.png" width="500">
 
 ### Setup bot config file
-The config file is handled [here](config/config.yaml)
-```yaml
+
+The config is made with environment variables
+```bash
 slack:
-  appURL:               # Base URL of the bot
-  signingSecret:        # Slack signing secret (https://api.slack.com/apps/${APP_ID}/general)
-  clientID:             # Slack client ID (https://api.slack.com/apps/${APP_ID}/general)
-  clientSecret:         # Slack client secret (https://api.slack.com/apps/${APP_ID}/general)
-  callbackURL:          # Callback URL (https://${APP_URL}/auth/slack/callback)
-  token:                # Slack verification token (https://api.slack.com/apps/${APP_ID}/general)
+  appURL:               # (Env KEY: SLACK_APP_URL) Base URL of the bot (eg. 'https://bot-example.com' if host with this domain) 
+  signingSecret:        # (Env KEY: SLACK_SECRET) Slack signing secret (https://api.slack.com/apps/${APP_ID}/general)
+  clientID:             # (️Env KEY: SLACK_CLIENT_ID) Slack client ID (https://api.slack.com/apps/${APP_ID}/general)
+  clientSecret:         # (️Env KEY: SLACK_CLIENT_SECRET) Slack client secret (https://api.slack.com/apps/${APP_ID}/general)
+  callbackURL:          # (️Env KEY: SLACK_CALLBACK_URL) Callback URL (https://${APP_URL}/auth/slack/callback)
+  token:                # (️Env KEY: SLACK_TOKEN) Slack verification token (https://api.slack.com/apps/${APP_ID}/general)
 server:
-  port:                 # Bot webserver port
+  port:                 # (️Env KEY: SERVER_PORT) Bot webserver port
 database:
-  name:                 # Database name
-  host:                 # Database host/address
-  username:             # Database user
-  password:             # Database password
+  name:                 # (️Env KEY: DATABASE_NAME) Database name
+  host:                 # (️Env KEY: DATABASE_HOST) Database host/address
+  username:             # (️Env KEY: DATABASE_USERNAME) Database user
+  password:             # (️Env KEY: DATABASE_PASSWORD) Database password
 core:
-  cryptoKey:            # Message hashing string
-  expirationTime:       # Expiration time of message in database (in seconds)
+  cryptoKey:            # (️Env KEY: HASH_CRYPTO_KEY) A chosen string to hash messages
+  expirationTime:       # (️Env KEY: EXPIRATION_TIME) Expiration time of message in database (in seconds)
 ```
 
 ### Build and run the app

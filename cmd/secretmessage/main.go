@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/neufeldtech/secretmessage-go/pkg/secretmessage"
 	"github.com/neufeldtech/secretmessage-go/pkg/secretslack"
 	"github.com/prometheus/common/log"
+	"github.com/spf13/viper"
 	_ "go.elastic.co/apm/module/apmgormv2"
 	postgres "go.elastic.co/apm/module/apmgormv2/driver/postgres"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
 
-	"github.com/spf13/viper"
 	"go.elastic.co/apm/module/apmhttp"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
@@ -43,25 +44,35 @@ type BotConfig struct {
 }
 
 func initConfig() *BotConfig {
-	viper.AddConfigPath("./config")
-	viper.SetConfigName("config")
-	//viper.SetConfigName("secretmessage")
-	viper.SetConfigType("yaml")
-
 	viper.SetDefault("secretmessage.server.port", 8080)
 	viper.SetDefault("secretmessage.core.expirationTime", 86400)
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("error initializing config file: %v", err)
+	config := BotConfig{}
+
+	port, err := strconv.ParseInt(os.Getenv("SERVER_PORT"), 10, 64)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	config := BotConfig{}
-	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatalf("error unmarshaling config file to struct: %v", err)
+	expirationTime, err := strconv.ParseInt(os.Getenv("EXPIRATION_TIME"), 10, 64)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	config.Server.Port = port
+	config.Core.ExpirationTime = expirationTime
+
+	config.Slack.Token = os.Getenv("SLACK_TOKEN")
+	config.Slack.ClientID = os.Getenv("SLACK_CLIENT_ID")
+	config.Slack.ClientSecret = os.Getenv("SLACK_CLIENT_SECRET")
+	config.Slack.CallbackURL = os.Getenv("SLACK_CALLBACK_URL")
+	config.Slack.SigningSecret = os.Getenv("SLACK_SECRET")
+	config.Slack.AppURL = os.Getenv("SLACK_APP_URL")
+	config.Core.CryptoKey = os.Getenv("HASH_CRYPTO_KEY")
 
 	config.Database.URL = fmt.Sprintf(
-		"postgres://%s:%s@%s/%s", config.Database.Username, config.Database.Password, config.Database.Host, config.Database.Name,
+		"postgres://%s:%s@%s/%s",
+		os.Getenv("DATABASE_USERNAME"), os.Getenv("DATABASE_PASSWORD"), os.Getenv("DATABASE_HOST"), os.Getenv("DATABASE_NAME"),
 	)
 
 	return &config

@@ -22,9 +22,10 @@ services:
       - "5050:80"
   secretmessage:
     container_name: secretmessage-go
+    # env_file: .config/.env
     build:
       context: .
-      dockerfile: Dockerfile-secretmessage
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
